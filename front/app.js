@@ -99,23 +99,86 @@ async function enviarMensagem(e) {
   }
 }
 
+// Função para comprimir imagem antes do upload
+async function compressImage(file) {
+  // Verificar se o arquivo já é pequeno o suficiente
+  if (file.size <= config.MAX_IMAGE_SIZE) {
+    return file;
+  }
+
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target.result;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let width = img.width;
+        let height = img.height;
+
+        // Redimensionar se a imagem for muito grande
+        const MAX_WIDTH = 800;
+        const MAX_HEIGHT = 800;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Converter para JPEG com qualidade reduzida
+        canvas.toBlob(
+          (blob) => {
+            resolve(new File([blob], file.name, { type: "image/jpeg" }));
+          },
+          "image/jpeg",
+          0.7
+        );
+      };
+    };
+  });
+}
+
 // Função para enviar imagem
 async function enviarImagem(imagem) {
   try {
     isUploading = true;
+    showFeedback("Comprimindo imagem...", "info");
+
+    // Comprimir a imagem antes de enviar
+    const compressedImage = await compressImage(imagem);
+
     showFeedback("Enviando imagem...", "info");
 
     const formData = new FormData();
-    formData.append("image", imagem);
+    formData.append("image", compressedImage);
     formData.append("roomId", chatId);
 
     const response = await fetch(`${config.API_URL}/upload`, {
       method: "POST",
       body: formData,
+      mode: "cors",
+      credentials: "include",
     });
 
     if (!response.ok) {
-      throw new Error("Erro ao enviar imagem");
+      if (response.status === 413) {
+        throw new Error("Imagem muito grande. Tente uma imagem menor.");
+      } else {
+        throw new Error(`Erro ao enviar imagem: ${response.status}`);
+      }
     }
 
     const data = await response.json();
@@ -123,7 +186,7 @@ async function enviarImagem(imagem) {
     isUploading = false;
     return data;
   } catch (error) {
-    showFeedback("Erro ao enviar imagem", "error");
+    showFeedback(`Erro: ${error.message}`, "error");
     console.error(error);
     isUploading = false;
     return null;
@@ -170,21 +233,42 @@ if (imageInput) {
     const file = e.target.files[0];
     if (!file) return;
 
+    // Verificar o tamanho do arquivo antes de tentar fazer o upload
+    if (file.size > config.MAX_IMAGE_SIZE * 2) {
+      showFeedback(
+        "Imagem muito grande. Tente uma imagem menor que 2MB.",
+        "error"
+      );
+      imageInput.value = "";
+      return;
+    }
+
     try {
       isUploading = true;
+      showFeedback("Comprimindo imagem...", "info");
+
+      // Comprimir a imagem antes de enviar
+      const compressedImage = await compressImage(file);
+
       showFeedback("Enviando imagem...", "info");
 
       const formData = new FormData();
-      formData.append("image", file);
+      formData.append("image", compressedImage);
       formData.append("roomId", chatId);
 
       const response = await fetch(`${config.API_URL}/upload`, {
         method: "POST",
         body: formData,
+        mode: "cors",
+        credentials: "include",
       });
 
       if (!response.ok) {
-        throw new Error("Erro ao enviar imagem");
+        if (response.status === 413) {
+          throw new Error("Imagem muito grande. Tente uma imagem menor.");
+        } else {
+          throw new Error(`Erro ao enviar imagem: ${response.status}`);
+        }
       }
 
       const data = await response.json();
@@ -202,7 +286,7 @@ if (imageInput) {
         );
       }
     } catch (error) {
-      showFeedback("Erro ao enviar imagem", "error");
+      showFeedback(`Erro: ${error.message}`, "error");
       console.error(error);
     } finally {
       isUploading = false;
