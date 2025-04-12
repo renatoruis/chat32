@@ -30,6 +30,8 @@ services:
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./nginx/data:/etc/letsencrypt
+      - ./nginx/www/certbot:/var/www/certbot
+
     ports:
       - "80:80"
       - "443:443"
@@ -44,6 +46,8 @@ services:
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./nginx/data:/etc/letsencrypt
+      - ./nginx/www/certbot:/var/www/certbot
+
     entrypoint: ""
     command: >
       sh -c "certbot certonly --webroot -w /var/www/certbot
