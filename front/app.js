@@ -102,9 +102,12 @@ async function enviarMensagem(e) {
 // Função para enviar imagem
 async function enviarImagem(imagem) {
   try {
+    isUploading = true;
+    showFeedback("Enviando imagem...", "info");
+
     const formData = new FormData();
-    formData.append("imagem", imagem);
-    formData.append("sala", chatId);
+    formData.append("image", imagem);
+    formData.append("roomId", chatId);
 
     const response = await fetch(`${config.API_URL}/upload`, {
       method: "POST",
@@ -117,10 +120,12 @@ async function enviarImagem(imagem) {
 
     const data = await response.json();
     showFeedback("Imagem enviada com sucesso", "success");
+    isUploading = false;
     return data;
   } catch (error) {
     showFeedback("Erro ao enviar imagem", "error");
     console.error(error);
+    isUploading = false;
     return null;
   }
 }
@@ -145,6 +150,17 @@ if (closeModal) {
 
 if (cameraBtn) {
   cameraBtn.addEventListener("click", () => {
+    // Verificar se é um dispositivo móvel
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    if (isMobile) {
+      // Em dispositivos móveis, abrir a câmera diretamente
+      imageInput.setAttribute("capture", "environment");
+    } else {
+      // Em desktop, apenas abrir o seletor de arquivos
+      imageInput.removeAttribute("capture");
+    }
+
     imageInput.click();
   });
 }
@@ -155,9 +171,12 @@ if (imageInput) {
     if (!file) return;
 
     try {
+      isUploading = true;
+      showFeedback("Enviando imagem...", "info");
+
       const formData = new FormData();
       formData.append("image", file);
-      formData.append("roomId", localStorage.getItem("chat_room"));
+      formData.append("roomId", chatId);
 
       const response = await fetch(`${config.API_URL}/upload`, {
         method: "POST",
@@ -176,15 +195,19 @@ if (imageInput) {
         window.socket.send(
           JSON.stringify({
             type: "message",
-            roomId: localStorage.getItem("chat_room"),
+            roomId: chatId,
             content: `![${data.fileName}](${config.API_URL}${data.path})`,
-            username: localStorage.getItem("user_name") || "Anônimo",
+            username: userName || "Anônimo",
           })
         );
       }
     } catch (error) {
       showFeedback("Erro ao enviar imagem", "error");
       console.error(error);
+    } finally {
+      isUploading = false;
+      // Limpar o input para permitir selecionar a mesma imagem novamente
+      imageInput.value = "";
     }
   });
 }

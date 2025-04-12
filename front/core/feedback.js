@@ -137,46 +137,35 @@ function setupEventListeners() {
 }
 
 export function showFeedback(message, type = "info") {
-  const feedback = document.createElement("div");
-  feedback.className = `feedback ${type} mb-2 p-4 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out`;
+  // Verificar se já existe um elemento de feedback
+  let feedbackElement = document.getElementById("feedback-message");
 
-  const icon = document.createElement("span");
-  icon.className = "mr-2";
-
-  switch (type) {
-    case "success":
-      icon.textContent = "✓";
-      feedback.classList.add("bg-green-900", "text-green-100");
-      break;
-    case "error":
-      icon.textContent = "✕";
-      feedback.classList.add("bg-red-900", "text-red-100");
-      break;
-    case "info":
-      icon.textContent = "ℹ";
-      feedback.classList.add("bg-blue-900", "text-blue-100");
-      break;
-    case "warning":
-      icon.textContent = "⚠";
-      feedback.classList.add("bg-yellow-900", "text-yellow-100");
-      break;
+  // Se não existir, criar um novo
+  if (!feedbackElement) {
+    feedbackElement = document.createElement("div");
+    feedbackElement.id = "feedback-message";
+    feedbackElement.className =
+      "fixed bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded text-sm z-50 transition-opacity duration-300";
+    document.body.appendChild(feedbackElement);
   }
 
-  feedback.appendChild(icon);
-  feedback.appendChild(document.createTextNode(message));
+  // Definir a cor com base no tipo
+  let bgColor = "bg-green-800";
+  if (type === "error") {
+    bgColor = "bg-red-800";
+  } else if (type === "info") {
+    bgColor = "bg-blue-800";
+  }
 
-  feedbackContainer.appendChild(feedback);
+  // Atualizar o elemento
+  feedbackElement.textContent = message;
+  feedbackElement.className = `fixed bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded text-sm z-50 transition-opacity duration-300 ${bgColor} text-white`;
 
-  // Animação de entrada
-  requestAnimationFrame(() => {
-    feedback.style.opacity = "1";
-    feedback.style.transform = "translateX(0)";
-  });
+  // Mostrar o elemento
+  feedbackElement.style.opacity = "1";
 
-  // Remover após 3 segundos
+  // Esconder após 3 segundos
   setTimeout(() => {
-    feedback.style.opacity = "0";
-    feedback.style.transform = "translateX(100%)";
-    setTimeout(() => feedback.remove(), 100);
-  }, 1000);
+    feedbackElement.style.opacity = "0";
+  }, 3000);
 }

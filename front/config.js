@@ -14,7 +14,7 @@ export const config = {
   MAX_MESSAGES_PER_ROOM: 16,
 
   // Tempo de verificação de expiração (em segundos)
-  EXPIRATION_CHECK_INTERVAL: 5,
+  EXPIRATION_CHECK_INTERVAL: 15,
 
   // Tempo de atualização do contador (em segundos)
   COUNTDOWN_UPDATE_INTERVAL: 1,
