@@ -4,6 +4,7 @@ import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import sharp from "sharp";
 import { redis } from "./redis.js";
+import heicConvert from "heic-convert";
 
 // Diretório onde as imagens serão armazenadas
 const UPLOAD_DIR = path.join(process.cwd(), "uploads");
@@ -16,39 +17,46 @@ if (!fs.existsSync(UPLOAD_DIR)) {
 // Função para processar e salvar uma imagem
 export async function processAndSaveImage(file) {
   try {
-    // Gerar um ID único para a imagem
+    let buffer = file.buffer;
+
+    // Detecta HEIC e converte pra JPEG
+    if (
+      file.mimetype === "image/heic" ||
+      file.originalname.toLowerCase().endsWith(".heic")
+    ) {
+      buffer = await heicConvert({
+        buffer,
+        format: "JPEG",
+        quality: 1,
+      });
+    }
+
     const imageId = uuidv4();
-    // Sempre usar extensão .webp para todas as imagens
     const fileExtension = ".webp";
     const fileName = `${imageId}${fileExtension}`;
     const filePath = path.join(UPLOAD_DIR, fileName);
 
-    // Processar a imagem com sharp e converter para WebP
-    await sharp(file.buffer)
+    await sharp(buffer)
       .resize(600, null, {
-        // Redimensionar para largura máxima de 600px, altura proporcional
         withoutEnlargement: true,
         fit: "inside",
       })
-      .webp({ quality: 80 }) // Converter para WebP com qualidade 80%
+      .webp({ quality: 80 })
       .toFile(filePath);
 
-    // Verificar o tamanho do arquivo
     const stats = fs.statSync(filePath);
     const fileSizeInBytes = stats.size;
 
-    // Se ainda estiver acima de 100KB, reduzir mais a qualidade
     if (fileSizeInBytes > 100 * 1024) {
-      await sharp(file.buffer)
+      await sharp(buffer)
         .resize(600, null, {
           withoutEnlargement: true,
           fit: "inside",
         })
-        .webp({ quality: 60 }) // Reduzir mais a qualidade
+        .webp({ quality: 60 })
         .toFile(filePath);
     }
 
-    // Salvar referência no Redis
     await redis.set(`image:${imageId}`, fileName);
 
     return {
