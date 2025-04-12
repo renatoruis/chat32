@@ -16,6 +16,7 @@ if (!fs.existsSync(UPLOAD_DIR)) {
 
 // Função para processar e salvar uma imagem
 export async function processAndSaveImage(file) {
+  console.log("Processando imagem");
   try {
     let buffer = file.buffer;
 
@@ -24,6 +25,7 @@ export async function processAndSaveImage(file) {
       file.mimetype === "image/heic" ||
       file.originalname.toLowerCase().endsWith(".heic")
     ) {
+      console.log("Convertendo HEIC para JPEG");
       buffer = await heicConvert({
         buffer,
         format: "JPEG",
