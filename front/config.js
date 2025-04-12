@@ -3,7 +3,7 @@ export const config = {
   // Endereço da API
   // API_URL: "http://localhost:3000",
   API_URL: "https://api.chat32.space",
-
+  WS_API_URL: "wss://api.chat32.space",
   // Tempo de expiração da sala (em horas)
   ROOM_LIFETIME_HOURS: 1,
 

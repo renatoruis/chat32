@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   app:
     container_name: app
@@ -9,8 +11,8 @@ services:
     volumes:
       - ./back/.env:/app/.env
       - ./app-data:/app/data
-    ports:
-      - "80:3000"
+    expose:
+      - "3000"
     depends_on:
       - redis
     networks:
@@ -21,10 +23,34 @@ services:
     container_name: redis
     volumes:
       - ./redis:/data
-    ports:
-      - "6379:6379"
     networks:
       - chat32
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/data:/etc/letsencrypt
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - app
+    networks:
+      - chat32
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/data:/etc/letsencrypt
+    entrypoint: ""
+    command: >
+      sh -c "certbot certonly --webroot -w /var/www/certbot
+      --email renatoruis@gmail.com --agree-tos --no-eff-email
+      -d api.chat32.space"
 
 networks:
   chat32:

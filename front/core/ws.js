@@ -64,9 +64,7 @@ export function connectWebSocket() {
   }
 
   try {
-    const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const apiUrl = new URL(config.API_URL);
-    const wsUrl = `${wsProtocol}//${apiUrl.hostname}:${apiUrl.port || 3000}`;
+    const wsUrl = config.WS_API_URL;
 
     socket = new WebSocket(wsUrl);
     window.socket = socket; // Expor o socket globalmente
