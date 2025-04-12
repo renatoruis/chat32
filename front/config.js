@@ -18,7 +18,4 @@ export const config = {
 
   // Tempo de atualização do contador (em segundos)
   COUNTDOWN_UPDATE_INTERVAL: 1,
-
-  // Tamanho máximo de imagem (em bytes)
-  MAX_IMAGE_SIZE: 1024 * 1024, // 1MB
 };
