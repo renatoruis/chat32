@@ -60,7 +60,11 @@ export async function processAndSaveImage(file) {
     }
 
     await redis.set(`image:${imageId}`, fileName);
-
+    console.log("Imagem processada e salva no Redis", {
+      id: imageId,
+      fileName,
+      path: `/uploads/${fileName}`,
+    });
     return {
       id: imageId,
       fileName,
