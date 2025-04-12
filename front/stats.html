@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Estatísticas - Chat32</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fira+Mono&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module" src="stats.js"></script>
+    <link rel="stylesheet" href="static/style.css" />
+    <style>
+      /* Efeito de terminal piscando */
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0;
+        }
+      }
+      .cursor-blink {
+        animation: blink 1s step-end infinite;
+      }
+
+      /* Efeito de scanline */
+      body::after {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: repeating-linear-gradient(
+          0deg,
+          rgba(0, 0, 0, 0.15),
+          rgba(0, 0, 0, 0.15) 1px,
+          transparent 1px,
+          transparent 2px
+        );
+        pointer-events: none;
+        z-index: 999;
+      }
+
+      /* Efeito de destaque para valores atualizados */
+      @keyframes highlight {
+        0% {
+          background-color: rgba(0, 255, 0, 0.2);
+        }
+        100% {
+          background-color: transparent;
+        }
+      }
+      .highlight {
+        animation: highlight 1s ease-out;
+      }
+    </style>
+  </head>
+
+  <body class="h-screen bg-black text-[#00ff00] flex flex-col font-mono">
+    <!-- Cabeçalho estilo terminal -->
+    <header
+      class="bg-black text-[#00ff00] p-3 sm:p-4 font-bold flex justify-between items-center border-b border-[#006600]"
+    >
+      <div class="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm">
+        <span>📊 Estatísticas</span>
+        <span class="text-[#006600] text-xs">(página oculta)</span>
+      </div>
+
+      <div
+        class="cursor-pointer terminal-label text-sm sm:text-base"
+        id="back-btn"
+      >
+        ← Voltar
+      </div>
+    </header>
+
+    <!-- Conteúdo principal -->
+    <main class="flex-1 overflow-y-auto p-4">
+      <div class="max-w-3xl mx-auto">
+        <!-- Terminal de estatísticas -->
+        <div class="bg-black border border-[#006600] rounded-lg p-4 mb-4">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="text-[#00ff00]">$</span>
+            <span class="text-[#00ff00]">./stats.sh</span>
+            <span class="cursor-blink">_</span>
+          </div>
+
+          <div class="space-y-4">
+            <!-- Estatísticas serão inseridas aqui via JavaScript -->
+            <div id="stats-container" class="space-y-2">
+              <div class="flex items-center gap-2">
+                <span class="text-[#00ff00]">></span>
+                <span class="text-[#00ff00]">Inicializando sistema...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gráfico ASCII -->
+        <div class="bg-black border border-[#006600] rounded-lg p-4">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="text-[#00ff00]">$</span>
+            <span class="text-[#00ff00]">./graph.sh</span>
+            <span class="cursor-blink">_</span>
+          </div>
+
+          <div id="graph-container" class="font-mono text-xs">
+            <pre class="text-[#00ff00]">
+   Pessoas Online
+   ┌─────────────────────┐
+   │                     │
+   │                     │
+   │                     │
+   │                     │
+   │                     │
+   └─────────────────────┘
+            </pre>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Rodapé -->
+    <footer
+      class="bg-black text-[#00ff00] p-3 text-center text-xs border-t border-[#006600]"
+    >
+      <p>Chat32 - Estatísticas em Tempo Real</p>
+    </footer>
+  </body>
+</html>

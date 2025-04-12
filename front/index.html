@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat32</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="static/style.css" />
+    <script type="module" src="app.js"></script>
+    <script type="module" src="core/ws.js"></script>
+    <script type="module" src="core/feedback.js"></script>
+  </head>
+
+  <body class="min-h-screen flex flex-col bg-black">
+    <header class="border-b border-green-800 p-2 sm:p-4">
+      <div class="container mx-auto flex justify-between items-start relative">
+        <!-- Esquerda: Logo e infos -->
+        <div class="flex flex-col items-start">
+          <div class="flex items-center mb-1">
+            <span class="text-2xl font-bold text-[#00ff00]">Chat32</span>
+            <span class="cursor-blink ml-1 text-[#00ff00]">_</span>
+          </div>
+          <div class="flex flex-row text-left">
+            <span
+              id="room-name"
+              class="text-sm text-green-400 font-bold"
+            ></span>
+            |
+            <span
+              id="connection-count"
+              class="text-sm text-green-400 font-bold"
+            ></span>
+            |
+            <span id="time-left" class="text-sm text-green-400 font-bold">
+            </span>
+            💣
+          </div>
+        </div>
+        <!-- Direita: Botão de trocar sala -->
+        <div class="absolute top-2 right-2">
+          <button
+            id="change-room"
+            class="terminal-btn p-1 rounded text-sm"
+            title="Trocar de arena"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-1 container mx-auto p-2 sm:p-4 flex flex-col">
+      <div
+        id="messages"
+        class="flex-1 overflow-y-auto mb-2 sm:mb-4 p-2 sm:p-4 border border-green-800 rounded"
+        style="height: calc(100vh - 160px)"
+      ></div>
+
+      <form id="form" class="flex items-center gap-1 sm:gap-2">
+        <div class="relative w-full">
+          <input
+            type="text"
+            id="input"
+            maxlength="32"
+            class="w-full bg-black text-green-500 border border-green-800 rounded px-4 py-2 text-sm sm:text-base focus:outline-none focus:border-green-500 pr-14"
+            placeholder="Digite sua mensagem..."
+          />
+          <span
+            id="char-count"
+            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-green-500 pointer-events-none"
+          >
+            0/32
+          </span>
+        </div>
+        <input type="file" id="image-input" accept="image/*" class="hidden" />
+
+        <button
+          type="button"
+          id="emoji-btn"
+          class="terminal-btn w-8 h-8 flex items-center justify-center rounded"
+          title="Selecionar emoji"
+        >
+          🫡
+        </button>
+
+        <button
+          type="button"
+          id="camera-btn"
+          class="terminal-btn w-8 h-8 flex items-center justify-center rounded"
+          title="Enviar imagem"
+        >
+          📷
+        </button>
+
+        <button
+          type="submit"
+          class="terminal-btn w-8 h-8 flex items-center justify-center rounded"
+          title="Enviar mensagem"
+        >
+          ➤
+        </button>
+      </form>
+    </main>
+
+    <!-- <footer class="border-t border-green-800 p-2">
+      <div class="container mx-auto text-center text-xs text-green-400">
+        <p>Chat32 - Mensagens anônimas e temporárias</p>
+      </div>
+    </footer> -->
+
+    <div
+      id="rules-modal"
+      class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center p-4"
+    >
+      <div
+        class="modal-content bg-black border border-green-800 rounded p-4 sm:p-6 max-w-lg w-full mx-2 sm:mx-4"
+      >
+        <h2 class="text-lg sm:text-xl font-bold text-green-500 mb-3 sm:mb-4">
+          Regras da Sala
+        </h2>
+        <div
+          id="rules-content"
+          class="text-sm sm:text-base text-green-400 mb-4 sm:mb-6"
+        >
+          <p>Chat32 é uma sala de bate-papo anônimo e temporário.</p>
+          <p>Você pode enviar mensagens de até 32 caracteres.</p>
+          <p>Você só pode enviar uma mensagem por vez.</p>
+        </div>
+        <button
+          id="close-rules"
+          class="terminal-btn px-3 py-1 sm:px-4 sm:py-2 rounded text-sm sm:text-base"
+        >
+          Fechar
+        </button>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/emoji-mart@latest/dist/browser.js"></script>
+  </body>
+</html>

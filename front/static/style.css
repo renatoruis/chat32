@@ -1,0 +1,402 @@
+.emoji-picker {
+  z-index: 9999 !important;
+}
+
+body {
+  overflow: hidden;
+}
+
+#messages {
+  overflow-y: auto;
+  flex: 1 1 auto;
+  padding-bottom: 80px; /* espaço pro form não ficar por cima das msgs */
+}
+
+#form {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0.5rem;
+  background-color: #000;
+  border-top: 1px solid #006600;
+  z-index: 50;
+}
+
+@keyframes explode {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0px rgba(255, 100, 0, 0.8);
+  }
+  50% {
+    transform: scale(1.2);
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.8), 0 0 40px rgba(255, 150, 0, 0.8),
+      0 0 60px rgba(255, 200, 0, 0.5);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: none;
+  }
+}
+
+.boom {
+  animation: explode 0.4s ease-out;
+}
+
+/* Efeito de explosão para a arena expirada */
+@keyframes explosion {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.explosion-effect {
+  animation: explosion 0.5s ease-in-out infinite;
+  position: relative;
+}
+
+.explosion-effect::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    circle,
+    rgba(255, 0, 0, 0.2) 0%,
+    rgba(0, 0, 0, 0) 70%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Efeito de pulsação para o modal de expiração */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+  }
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+  }
+}
+
+.pulse-effect {
+  animation: pulse 2s infinite;
+}
+
+/* Estilos gerais */
+body {
+  font-family: "Fira Mono", monospace;
+  color: #00ff00;
+  background-color: #000;
+  overflow-x: hidden;
+}
+
+#input:focus::placeholder {
+  color: transparent;
+}
+
+/* Cursor piscando estilo terminal */
+#input:focus {
+  caret-color: #00ff00;
+}
+
+/* Efeito de cursor piscante */
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.cursor-blink {
+  animation: blink 1s step-end infinite;
+}
+
+/* Estilo do input */
+#input {
+  font-family: "Fira Mono", monospace;
+  height: 36px;
+  font-size: 0.875rem;
+}
+
+#input:focus {
+  outline: none;
+  border-color: #00ff00;
+  box-shadow: 0 0 0 2px rgba(0, 255, 0, 0.1);
+}
+
+/* Estilo das mensagens do terminal */
+.terminal-message {
+  position: relative;
+  padding: 0.5rem;
+  margin: 0.25rem 0;
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.user-message {
+  background-color: rgba(0, 255, 0, 0.1);
+  border-left: 2px solid #00ff00;
+}
+
+.bot-message {
+  background-color: rgba(0, 0, 0, 0.5);
+  border-left: 2px solid #006600;
+}
+
+/* Efeito hover nas mensagens */
+.terminal-message:hover {
+  transform: translateX(5px);
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+/* Estilo dos botões do terminal */
+.terminal-btn {
+  background-color: #000;
+  color: #00ff00;
+  border: 1px solid #006600;
+  transition: all 0.2s ease;
+  font-family: "Fira Mono", monospace;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.terminal-btn:hover:not(:disabled) {
+  background-color: #006600;
+  color: #00ff00;
+  border-color: #00ff00;
+}
+
+.terminal-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Estilo específico para o botão de trocar de arena */
+#change-room {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}
+
+#change-room svg {
+  color: #00ff00;
+  transition: transform 0.3s ease;
+}
+
+#change-room:hover svg {
+  transform: rotate(180deg);
+}
+
+/* Estilo do label do terminal */
+.terminal-label {
+  color: #00ff00;
+  font-weight: bold;
+}
+
+/* Ajustes responsivos */
+@media (max-width: 640px) {
+  header {
+    padding: 0.75rem;
+  }
+
+  #messages {
+    height: calc(100vh - 10rem);
+  }
+
+  .terminal-btn {
+    padding: 0.5rem 1rem;
+  }
+}
+
+/* Estilo do scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #000000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #006600;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00ff00;
+}
+
+/* Animações suaves */
+.transition-colors {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Estilo do modal */
+.modal-content {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Estilo das imagens nas mensagens */
+.message-image {
+  max-width: 100%;
+  border: 1px solid #006600;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+}
+
+/* Estilo do contador de caracteres */
+#char-count {
+  position: absolute;
+  right: 10px;
+  bottom: 5px;
+  font-size: 0.8em;
+  color: #006600;
+  transition: color 0.3s ease;
+}
+
+/* Estilo para as mensagens no chat */
+#messages > div {
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+}
+
+/* Estilos para imagens nas mensagens */
+#messages img {
+  display: block;
+  margin-top: 8px;
+  border-radius: 4px;
+  border: 1px solid #006600;
+  max-width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+  background-color: #111;
+}
+
+#messages img:hover {
+  border-color: #00ff00;
+  box-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+}
+
+/* Efeito de digitação */
+.typing-effect {
+  overflow: hidden;
+  border-right: 2px solid #00ff00;
+  white-space: nowrap;
+  animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+}
+
+@keyframes typing {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes blink-caret {
+  from,
+  to {
+    border-color: transparent;
+  }
+  50% {
+    border-color: #00ff00;
+  }
+}
+
+/* Estilos do cabeçalho */
+header {
+  box-shadow: 0 2px 4px rgba(0, 255, 0, 0.1);
+}
+
+#room-name {
+  font-size: 0.875rem;
+  color: #00ff00;
+}
+
+#room-info {
+  font-size: 0.875rem;
+  color: #00ff00;
+}
+
+#connection-count {
+  font-size: 0.875rem;
+  color: #00ff00;
+}
+
+#time-left {
+  font-size: 0.875rem;
+  color: #00ff00;
+}
+
+/* Estilos da área de mensagens */
+#messages {
+  scrollbar-width: thin;
+  scrollbar-color: #006600 #000;
+}
+
+#messages::-webkit-scrollbar {
+  width: 8px;
+}
+
+#messages::-webkit-scrollbar-track {
+  background: #000;
+}
+
+#messages::-webkit-scrollbar-thumb {
+  background-color: #006600;
+  border-radius: 4px;
+}
+
+/* Animações */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Estilos do modal */
+#rules-modal {
+  backdrop-filter: blur(4px);
+}
+
+#rules-modal .modal-content {
+  animation: fadeIn 0.3s ease-out;
+}

@@ -1,0 +1,31 @@
+services:
+  app:
+    container_name: app
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    environment:
+      - REDIS_URL=redis://redis:6379
+    volumes:
+      - ./back/.env:/app/.env
+      - ./app-data:/app/data
+    ports:
+      - "3000:3000"
+    depends_on:
+      - redis
+    networks:
+      - chat32
+
+  redis:
+    image: redis:7
+    container_name: redis
+    volumes:
+      - ./redis:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - chat32
+
+networks:
+  chat32:
+    driver: bridge
