@@ -151,6 +151,11 @@ async function compressImage(file) {
   });
 }
 
+// Função para verificar se é um dispositivo iOS
+function isIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+}
+
 // Função para enviar imagem
 async function enviarImagem(imagem) {
   try {
@@ -213,14 +218,19 @@ if (closeModal) {
 
 if (cameraBtn) {
   cameraBtn.addEventListener("click", () => {
-    // Verificar se é um dispositivo móvel
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    // Verificar se é um dispositivo iOS
+    const isIOSDevice = isIOS();
 
-    if (isMobile) {
-      // Em dispositivos móveis, abrir a câmera diretamente
-      imageInput.setAttribute("capture", "environment");
+    if (isIOSDevice) {
+      // Em dispositivos iOS, usar "camera" em vez de "environment"
+      imageInput.setAttribute("capture", "camera");
     } else {
-      // Em desktop, apenas abrir o seletor de arquivos
+      // Em outros dispositivos móveis, usar "environment"
+      imageInput.setAttribute("capture", "environment");
+    }
+
+    // Remover o atributo capture em desktop
+    if (!/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
       imageInput.removeAttribute("capture");
     }
 
@@ -256,7 +266,11 @@ if (imageInput) {
       formData.append("image", compressedImage);
       formData.append("roomId", chatId);
 
-      const response = await fetch(`${config.API_URL}/upload`, {
+      // Adicionar um timestamp para evitar cache
+      const timestamp = new Date().getTime();
+      const url = `${config.API_URL}/upload?t=${timestamp}`;
+
+      const response = await fetch(url, {
         method: "POST",
         body: formData,
         mode: "cors",
