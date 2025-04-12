@@ -129,7 +129,7 @@ async function enviarImagem(imagem) {
       method: "POST",
       body: formData,
       mode: "cors",
-      credentials: "include",
+      credentials: "omit",
     });
 
     if (!response.ok) {
@@ -209,7 +209,7 @@ if (imageInput) {
         method: "POST",
         body: formData,
         mode: "cors",
-        credentials: "include",
+        credentials: "omit",
       });
 
       if (!response.ok) {
