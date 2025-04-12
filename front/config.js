@@ -1,7 +1,8 @@
 // Configurações do front-end
 export const config = {
   // Endereço da API
-  API_URL: "http://localhost:3000",
+  // API_URL: "http://localhost:3000",
+  API_URL: "http://54.147.134.13:3000",
 
   // Tempo de expiração da sala (em horas)
   ROOM_LIFETIME_HOURS: 1,
